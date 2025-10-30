@@ -26,6 +26,11 @@ import cors from 'cors';
 import express, { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { join } from 'path';
 
+// Smart Broker Module imports
+import { connectMongoDB } from './modules/smart-broker/config/mongoose.config';
+import { smartBrokerRouter } from './modules/smart-broker/routes';
+import { errorHandlerMiddleware } from './modules/smart-broker/middleware/error-handler.middleware';
+
 function initWA() {
   waMonitor.loadInstance();
 }
@@ -33,6 +38,16 @@ function initWA() {
 async function bootstrap() {
   const logger = new Logger('SERVER');
   const app = express();
+
+  // ============ SMART BROKER: Conectar MongoDB ============
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/smart-broker';
+  try {
+    await connectMongoDB(mongoUri);
+    logger.info('Smart Broker MongoDB - ON');
+  } catch (error) {
+    logger.error(`Falha ao conectar MongoDB: ${error.message}`);
+    process.exit(1);
+  }
 
   let providerFiles: ProviderFiles = null;
   if (configService.get<ProviderSession>('PROVIDER').ENABLED) {
@@ -70,7 +85,14 @@ async function bootstrap() {
 
   app.use('/store', express.static(join(ROOT_DIR, 'store')));
 
+  // ============ SMART BROKER: Montar routers ============
+  app.use('/smart-broker', smartBrokerRouter);
+  logger.info('Smart Broker Routes - ON');
+
   app.use('/', router);
+
+  // ============ SMART BROKER: Error Handler (aplica ANTES do error handler da Evolution) ============
+  app.use(errorHandlerMiddleware);
 
   app.use(
     (err: Error, req: Request, res: Response, next: NextFunction) => {

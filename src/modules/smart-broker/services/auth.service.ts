@@ -14,6 +14,7 @@ export interface RegisterDto {
   password: string;
   name: string;
   phone?: string;
+  role?: string; // Adicionar role como opcional
 }
 
 export interface AuthResponse {
@@ -74,7 +75,7 @@ export class AuthService {
    * Registro de novo usuário
    */
   async register(dto: RegisterDto): Promise<AuthResponse> {
-    const { email, password, name, phone } = dto;
+    const { email, password, name, phone, role } = dto;
 
     // Verificar se email já existe
     const existingUser = await UserModel.findOne({ email });
@@ -91,7 +92,7 @@ export class AuthService {
       password: hashedPassword,
       name,
       phone,
-      role: 'viewer', // Novo usuário começa como viewer
+      role: role || 'viewer', // Usar role fornecido ou 'viewer' como padrão
       isActive: true,
     });
 
@@ -133,7 +134,8 @@ export class AuthService {
    */
   private generateToken(user: IUser): string {
     const payload = {
-      userId: user._id.toString(),
+      sub: user._id.toString(), // Usar 'sub' conforme interface JwtPayload
+      userId: user._id.toString(), // Manter para compatibilidade
       email: user.email,
       role: user.role,
       agencyId: user.agencyId?.toString(),

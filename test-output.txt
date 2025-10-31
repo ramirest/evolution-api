@@ -1,0 +1,152 @@
+
+> evolution-api@2.3.6 test:e2e
+> tsx ./test/smart-broker/e2e.test.ts
+
+
+=================================================
+­ƒÜÇ SMART BROKER E2E TESTS
+=================================================
+
+
+[E2E] TEST 1: Registro de usu├írios
+­ƒôñ Enviando requisi├º├úo de registro para Admin...
+URL: http://localhost:8080/smart-broker/auth/register
+Dados: {
+  "email": "admin-1761933094402@test.com",
+  "password": "Test@123456",
+  "name": "Admin Test User",
+  "role": "admin"
+}
+­ƒôÑ Resposta recebida:
+Status: 201
+Data: {
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OTA0ZjcyNjBkODI2ZjMwODQ4OTMyOTQiLCJ1c2VySWQiOiI2OTA0ZjcyNjBkODI2ZjMwODQ4OTMyOTQiLCJlbWFpbCI6ImFkbWluLTE3NjE5MzMwOTQ0MDJAdGVzdC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE5MzMwOTQsImV4cCI6MTc2MjUzNzg5NH0.vHBCxA1k8cbH6eqIBqj7x45rSYJJLk1kKsGur8gE1VE",
+  "user": {
+    "id": "6904f7260d826f3084893294",
+    "email": "admin-1761933094402@test.com",
+    "name": "Admin Test User",
+    "role": "admin"
+  }
+}
+Ô£à Admin registrado com sucesso
+
+[E2E] Admin registrado
+{
+  "userId": "6904f7260d826f3084893294"
+}
+Ô£à Manager registrado com sucesso
+
+[E2E] Manager registrado
+{
+  "userId": "6904f7260d826f3084893297"
+}
+Ô£à Agent registrado com sucesso
+
+[E2E] Agent registrado
+{
+  "userId": "6904f7270d826f308489329a"
+}
+
+[E2E] TEST 2: Login de usu├írios
+Ô£à Admin logado com sucesso
+Ô£à Token JWT recebido
+
+[E2E] Admin logado
+{
+  "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+Ô£à Manager logado com sucesso
+
+[E2E] Manager logado
+Ô£à Agent logado com sucesso
+
+[E2E] Agent logado
+
+[E2E] TEST 3: Criar ag├¬ncia
+­ƒôÑ Resposta criar ag├¬ncia:
+Status: 201
+Data: {
+  "name": "Test Real Estate Agency",
+  "cnpj": "12.345.678/0001-90",
+  "description": "Ag├¬ncia de testes E2E",
+  "phone": "(11) 99999-9999",
+  "email": "agency@test.com",
+  "address": {
+    "street": "Rua Teste",
+    "number": "123",
+    "city": "S├úo Paulo",
+    "state": "SP",
+    "zipCode": "01000-000",
+    "country": "Brasil"
+  },
+  "owner": "6904f7260d826f3084893294",
+  "members": [],
+  "isActive": true,
+  "maxInstances": 3,
+  "_id": "6904f7270d826f30848932a3",
+  "createdAt": "2025-10-31T17:51:35.620Z",
+  "updatedAt": "2025-10-31T17:51:35.620Z",
+  "__v": 0
+}
+Ô£à Ag├¬ncia criada com sucesso
+
+[E2E] Ag├¬ncia criada
+{
+  "id": "6904f7270d826f30848932a3",
+  "name": "Test Real Estate Agency"
+}
+­ƒöä Token do Admin atualizado. Payload: {
+  "sub": "6904f7260d826f3084893294",
+  "userId": "6904f7260d826f3084893294",
+  "email": "admin-1761933094402@test.com",
+  "role": "admin",
+  "agencyId": "6904f7270d826f30848932a3",
+  "iat": 1761933096,
+  "exp": 1762537896
+}
+
+[E2E] TEST 4: Adicionar membros ├á ag├¬ncia
+Ô£à Manager adicionado ├á ag├¬ncia
+
+[E2E] Manager adicionado
+Ô£à Agent adicionado ├á ag├¬ncia
+
+[E2E] Agent adicionado
+­ƒöä Token do Manager atualizado com agencyId
+­ƒöä Token do Agent atualizado com agencyId
+
+[E2E] TEST 5: Criar im├│vel
+­ƒôÑ Resposta criar im├│vel:
+Status: 500
+Data: {
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "Property validation failed: transactionType: Path `transactionType` is required.",
+  "errors": {
+    "transactionType": {
+      "name": "ValidatorError",
+      "message": "Path `transactionType` is required.",
+      "properties": {
+        "message": "Path `transactionType` is required.",
+        "type": "required",
+        "path": "transactionType"
+      },
+      "kind": "required",
+      "path": "transactionType"
+    }
+  },
+  "stack": "ValidationError: Property validation failed: transactionType: Path `transactionType` is required.\n    at Document.invalidate (C:\\Users\\ramir\\OneDrive\\Documentos\\Projects\\smart-broker\\evolution-api\\node_modules\\mongoose\\lib\\document.js:3362:32)\n    at C:\\Users\\ramir\\OneDrive\\Documentos\\Projects\\smart-broker\\evolution-api\\node_modules\\mongoose\\lib\\document.js:3123:17\n    at C:\\Users\\ramir\\OneDrive\\Documentos\\Projects\\smart-broker\\evolution-api\\node_modules\\mongoose\\lib\\schemaType.js:1417:9\n    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)"
+}
+ÔØî Erro ao criar im├│vel:
+Status: undefined
+Data: undefined
+
+=================================================
+ÔØî TESTE FALHOU!
+=================================================
+
+Error: ÔØî Assertion failed: Im├│vel criado com sucesso
+    at SmartBrokerE2ETests.assert (C:\Users\ramir\OneDrive\Documentos\Projects\smart-broker\evolution-api\test\smart-broker\e2e.test.ts:94:13)
+    at SmartBrokerE2ETests.testCreateProperty (C:\Users\ramir\OneDrive\Documentos\Projects\smart-broker\evolution-api\test\smart-broker\e2e.test.ts:342:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SmartBrokerE2ETests.runAll (C:\Users\ramir\OneDrive\Documentos\Projects\smart-broker\evolution-api\test\smart-broker\e2e.test.ts:539:7)

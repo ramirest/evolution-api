@@ -49,16 +49,16 @@ authRouter.post('/login', async (req: Request, res: Response, next: NextFunction
  */
 authRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password, name, phone } = req.body;
+    const { email, password, name, phone, role } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'Email, senha e nome são obrigatórios' });
     }
 
-    const result = await authService.register({ email, password, name, phone });
+    const result = await authService.register({ email, password, name, phone, role });
     
-    logger.info(`Novo usuário registrado: ${email}`);
-    return res.json(result);
+    logger.info(`Novo usuário registrado: ${email} (role: ${role || 'viewer'})`);
+    return res.status(201).json(result); // Status 201 Created
   } catch (error) {
     logger.error(`Erro no registro: ${error.message}`);
     next(error);

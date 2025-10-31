@@ -1,0 +1,228 @@
+
+> evolution-api@2.3.6 test:e2e:clean
+> node clear-test-data.js && tsx ./test/smart-broker/e2e.test.ts
+
+­ƒùæ´©Å  Limpando dados de teste...
+
+Ô£à agencies: 1 documentos removidos
+ÔÅ¡´©Å  templates: vazio
+ÔÅ¡´©Å  webhookconfigs: vazio
+ÔÅ¡´©Å  agentruns: vazio
+ÔÅ¡´©Å  integrationsettings: vazio
+ÔÅ¡´©Å  whatsappchats: vazio
+Ô£à users: 9 documentos removidos
+ÔÅ¡´©Å  notifications: vazio
+Ô£à properties: 1 documentos removidos
+ÔÅ¡´©Å  agentsessions: vazio
+ÔÅ¡´©Å  campaignexecutionlogs: vazio
+ÔÅ¡´©Å  whatsappmessages: vazio
+ÔÅ¡´©Å  messagetemplates: vazio
+ÔÅ¡´©Å  contacts: vazio
+ÔÅ¡´©Å  campaigns: vazio
+ÔÅ¡´©Å  files: vazio
+ÔÅ¡´©Å  globalsettings: vazio
+ÔÅ¡´©Å  webhooks: vazio
+ÔÅ¡´©Å  notificationpreferences: vazio
+ÔÅ¡´©Å  evolutioninstancemaps: vazio
+ÔÅ¡´©Å  auditlogs: vazio
+
+Ô£à Limpeza conclu├¡da!
+
+=================================================
+­ƒÜÇ SMART BROKER E2E TESTS
+=================================================
+
+
+[E2E] TEST 1: Registro de usu├írios
+­ƒôñ Enviando requisi├º├úo de registro para Admin...
+URL: http://localhost:8080/smart-broker/auth/register
+Dados: {
+  "email": "admin-1761933192413@test.com",
+  "password": "Test@123456",
+  "name": "Admin Test User",
+  "role": "admin"
+}
+­ƒôÑ Resposta recebida:
+Status: 201
+Data: {
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OTA0Zjc4ODBkODI2ZjMwODQ4OTMyZmQiLCJ1c2VySWQiOiI2OTA0Zjc4ODBkODI2ZjMwODQ4OTMyZmQiLCJlbWFpbCI6ImFkbWluLTE3NjE5MzMxOTI0MTNAdGVzdC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjE5MzMxOTIsImV4cCI6MTc2MjUzNzk5Mn0.asmcIFMeJQGeFUxFm2cbqpSssobeMoaHClYsufvy8us",
+  "user": {
+    "id": "6904f7880d826f30848932fd",
+    "email": "admin-1761933192413@test.com",
+    "name": "Admin Test User",
+    "role": "admin"
+  }
+}
+Ô£à Admin registrado com sucesso
+
+[E2E] Admin registrado
+{
+  "userId": "6904f7880d826f30848932fd"
+}
+Ô£à Manager registrado com sucesso
+
+[E2E] Manager registrado
+{
+  "userId": "6904f7880d826f3084893300"
+}
+Ô£à Agent registrado com sucesso
+
+[E2E] Agent registrado
+{
+  "userId": "6904f7890d826f3084893303"
+}
+
+[E2E] TEST 2: Login de usu├írios
+Ô£à Admin logado com sucesso
+Ô£à Token JWT recebido
+
+[E2E] Admin logado
+{
+  "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+Ô£à Manager logado com sucesso
+
+[E2E] Manager logado
+Ô£à Agent logado com sucesso
+
+[E2E] Agent logado
+
+[E2E] TEST 3: Criar ag├¬ncia
+­ƒôÑ Resposta criar ag├¬ncia:
+Status: 201
+Data: {
+  "name": "Test Real Estate Agency",
+  "cnpj": "12.345.678/0001-90",
+  "description": "Ag├¬ncia de testes E2E",
+  "phone": "(11) 99999-9999",
+  "email": "agency@test.com",
+  "address": {
+    "street": "Rua Teste",
+    "number": "123",
+    "city": "S├úo Paulo",
+    "state": "SP",
+    "zipCode": "01000-000",
+    "country": "Brasil"
+  },
+  "owner": "6904f7880d826f30848932fd",
+  "members": [],
+  "isActive": true,
+  "maxInstances": 3,
+  "_id": "6904f7890d826f308489330c",
+  "createdAt": "2025-10-31T17:53:13.647Z",
+  "updatedAt": "2025-10-31T17:53:13.647Z",
+  "__v": 0
+}
+Ô£à Ag├¬ncia criada com sucesso
+
+[E2E] Ag├¬ncia criada
+{
+  "id": "6904f7890d826f308489330c",
+  "name": "Test Real Estate Agency"
+}
+­ƒöä Token do Admin atualizado. Payload: {
+  "sub": "6904f7880d826f30848932fd",
+  "userId": "6904f7880d826f30848932fd",
+  "email": "admin-1761933192413@test.com",
+  "role": "admin",
+  "agencyId": "6904f7890d826f308489330c",
+  "iat": 1761933194,
+  "exp": 1762537994
+}
+
+[E2E] TEST 4: Adicionar membros ├á ag├¬ncia
+Ô£à Manager adicionado ├á ag├¬ncia
+
+[E2E] Manager adicionado
+Ô£à Agent adicionado ├á ag├¬ncia
+
+[E2E] Agent adicionado
+­ƒöä Token do Manager atualizado com agencyId
+­ƒöä Token do Agent atualizado com agencyId
+
+[E2E] TEST 5: Criar im├│vel
+­ƒôÑ Resposta criar im├│vel:
+Status: 201
+Data: {
+  "type": "apartment",
+  "transactionType": "sale",
+  "title": "Apartamento 2 Quartos Centro",
+  "description": "Belo apartamento com 2 quartos, sala, cozinha e banheiro",
+  "price": 250000,
+  "area": 65,
+  "address": {
+    "street": "Av. Principal",
+    "number": "456",
+    "neighborhood": "Centro",
+    "city": "S├úo Paulo",
+    "state": "SP",
+    "zipCode": "01001-000",
+    "country": "Brasil"
+  },
+  "features": {
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "parkingSpaces": 1,
+    "furnished": false,
+    "suites": 0,
+    "pool": false,
+    "gym": false,
+    "garden": false,
+    "barbecue": false,
+    "elevator": false,
+    "airConditioning": false,
+    "security": false
+  },
+  "photos": [],
+  "documents": [],
+  "status": "available",
+  "agency": "6904f7890d826f308489330c",
+  "owner": "6904f7880d826f3084893300",
+  "isActive": true,
+  "tags": [],
+  "views": 0,
+  "_id": "6904f78b0d826f308489331d",
+  "createdAt": "2025-10-31T17:53:15.139Z",
+  "updatedAt": "2025-10-31T17:53:15.139Z",
+  "__v": 0
+}
+Ô£à Im├│vel criado com sucesso
+
+[E2E] Im├│vel criado
+{
+  "id": "6904f78b0d826f308489331d",
+  "title": "Apartamento 2 Quartos Centro"
+}
+
+[E2E] TEST 6: Listar im├│veis com RBAC
+Ô£à Admin lista im├│veis com sucesso
+
+[E2E] Admin v├¬ im├│veis
+{
+  "count": 1
+}
+Ô£à Manager lista im├│veis com sucesso
+Ô£à Manager v├¬ pelo menos 1 im├│vel
+
+[E2E] Manager v├¬ im├│veis
+{
+  "count": 1
+}
+Ô£à Agent lista im├│veis com sucesso
+
+[E2E] Agent v├¬ im├│veis
+{
+  "count": 1
+}
+
+[E2E] TEST 7: Criar contato
+
+=================================================
+ÔØî TESTE FALHOU!
+=================================================
+
+Error: ÔØî Assertion failed: Contato criado com sucesso
+    at SmartBrokerE2ETests.assert (C:\Users\ramir\OneDrive\Documentos\Projects\smart-broker\evolution-api\test\smart-broker\e2e.test.ts:94:13)
+    at SmartBrokerE2ETests.testCreateContact (C:\Users\ramir\OneDrive\Documentos\Projects\smart-broker\evolution-api\test\smart-broker\e2e.test.ts:398:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SmartBrokerE2ETests.runAll (C:\Users\ramir\OneDrive\Documentos\Projects\smart-broker\evolution-api\test\smart-broker\e2e.test.ts:541:7)

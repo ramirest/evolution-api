@@ -89,6 +89,12 @@ export class PropertiesService {
     }
 
     // RBAC: Verificar se usuário pode criar imóvel nesta agência
+    console.log('[PropertiesService] Verificando RBAC para criar imóvel:');
+    console.log('  user.role:', user.role);
+    console.log('  user.agencyId:', user.agencyId);
+    console.log('  dto.agency:', dto.agency);
+    console.log('  Comparação:', user.agencyId, '!==', dto.agency, '=', user.agencyId !== dto.agency);
+    
     if (user.role !== UserRole.ADMIN && user.agencyId !== dto.agency) {
       throw new ForbiddenException('Você só pode criar imóveis na sua própria agência');
     }

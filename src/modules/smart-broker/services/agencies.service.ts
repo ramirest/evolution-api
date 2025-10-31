@@ -63,9 +63,13 @@ export class AgenciesService {
     const savedAgency = await agency.save();
 
     // Atualizar agencyId do owner (importante para RBAC)
-    await UserModel.findByIdAndUpdate(user.userId, {
-      agencyId: savedAgency._id,
-    });
+    const updatedOwner = await UserModel.findByIdAndUpdate(
+      user.userId,
+      { agencyId: savedAgency._id },
+      { new: true } // Retornar documento atualizado
+    );
+    
+    console.log(`[AgenciesService] Owner atualizado: ${updatedOwner?.email}, agencyId: ${updatedOwner?.agencyId}`);
 
     return savedAgency;
   }
@@ -292,12 +296,16 @@ export class AgenciesService {
     const { ContactModel } = await import('../models/contact.model');
     const { CampaignModel } = await import('../models/campaign.model');
 
+    console.log(`[AgenciesService.getStats] Contando recursos para agência: ${agency._id}`);
+    
     const [propertiesCount, contactsCount, campaignsCount, membersCount] = await Promise.all([
       PropertyModel.countDocuments({ agency: agency._id, isActive: true }),
       ContactModel.countDocuments({ agency: agency._id, isActive: true }),
       CampaignModel.countDocuments({ agency: agency._id, isActive: true }),
       UserModel.countDocuments({ agencyId: agency._id, isActive: true }),
     ]);
+
+    console.log(`[AgenciesService.getStats] Counts - Properties: ${propertiesCount}, Contacts: ${contactsCount}, Campaigns: ${campaignsCount}, Members: ${membersCount}`);
 
     return {
       agency: {

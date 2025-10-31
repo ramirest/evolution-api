@@ -44,6 +44,7 @@ export function jwtAuthMiddleware(
 
     // Anexar informações do usuário na request
     req.user = {
+      sub: decoded.sub,
       userId: decoded.sub,
       email: decoded.email,
       role: decoded.role,

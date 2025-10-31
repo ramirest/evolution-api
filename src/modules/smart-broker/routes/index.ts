@@ -5,6 +5,7 @@ import { contactsRouter } from './contacts.routes';
 import agenciesRouter from './agencies.routes';
 import campaignsRouter from './campaigns.routes';
 import agentsRouter from './agents.routes';
+import { whatsappRouter } from './whatsapp.routes';
 
 /**
  * Router principal do módulo Smart Broker
@@ -19,3 +20,4 @@ smartBrokerRouter.use('/contacts', contactsRouter);
 smartBrokerRouter.use('/agencies', agenciesRouter);
 smartBrokerRouter.use('/campaigns', campaignsRouter);
 smartBrokerRouter.use('/agents', agentsRouter);
+smartBrokerRouter.use('/whatsapp', whatsappRouter);

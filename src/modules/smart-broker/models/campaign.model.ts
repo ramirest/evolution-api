@@ -126,7 +126,17 @@ const CampaignSchema = new Schema<ICampaign>(
     tags: [String],
     metadata: { type: Map, of: Schema.Types.Mixed },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function(_doc, ret) {
+        ret.id = ret._id.toString();
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
 );
 
 // Índices

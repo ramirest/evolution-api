@@ -76,6 +76,14 @@ const AgencySchema = new Schema<IAgency>(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function(_doc, ret) {
+        ret.id = ret._id.toString();
+        delete ret.__v;
+        return ret;
+      }
+    }
   }
 );
 

@@ -110,7 +110,17 @@ const ContactSchema = new Schema<IContact>(
     urgency: String,
     source: String,
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function(_doc, ret) {
+        ret.id = ret._id.toString();
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
 );
 
 // Índices

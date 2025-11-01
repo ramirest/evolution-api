@@ -86,6 +86,25 @@ authRouter.get('/me', jwtAuthMiddleware, async (req: any, res: Response, next: N
 });
 
 /**
+ * GET /auth/profile
+ * Endpoint protegido - alias para /auth/me (compatibilidade com frontend)
+ * Retorna dados completos do usuário logado
+ */
+authRouter.get('/profile', jwtAuthMiddleware, async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    
+    // Buscar dados completos do usuário no banco
+    const fullUserData = await authService.getUserById(user.userId);
+    
+    return res.json(fullUserData);
+  } catch (error) {
+    logger.error(`Erro ao buscar perfil do usuário: ${error.message}`);
+    next(error);
+  }
+});
+
+/**
  * POST /auth/refresh
  * Endpoint protegido - renova o token JWT
  */

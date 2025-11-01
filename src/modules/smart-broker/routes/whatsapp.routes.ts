@@ -15,7 +15,7 @@ const instancesRepo = new InstancesRepository();
  */
 
 /**
- * GET /smart-broker/whatsapp/instances
+ * GET /whatsapp/instances
  * Listar todas as instâncias da agência do usuário logado
  * Permissões: Todos os usuários autenticados
  */
@@ -59,7 +59,7 @@ router.get(
 );
 
 /**
- * POST /smart-broker/whatsapp/instances
+ * POST /whatsapp/instances
  * Criar nova instância e associar à agência
  * Permissões: Admin, Manager
  */
@@ -112,7 +112,7 @@ router.post(
 );
 
 /**
- * GET /smart-broker/whatsapp/instances/:name
+ * GET /whatsapp/instances/:name
  * Obter detalhes de uma instância específica
  * Permissões: Todos os usuários autenticados (se pertence à agência)
  */
@@ -153,7 +153,7 @@ router.get(
 );
 
 /**
- * DELETE /smart-broker/whatsapp/instances/:name
+ * DELETE /whatsapp/instances/:name
  * Deletar instância
  * Permissões: Admin, Manager
  */
@@ -186,7 +186,7 @@ router.delete(
 );
 
 /**
- * POST /smart-broker/whatsapp/instances/:name/connect
+ * POST /whatsapp/instances/:name/connect
  * Conectar instância (gerar QR Code)
  * Permissões: Admin, Manager, Agent
  */
@@ -215,7 +215,7 @@ router.post(
 );
 
 /**
- * POST /smart-broker/whatsapp/instances/:name/disconnect
+ * POST /whatsapp/instances/:name/disconnect
  * Desconectar instância
  * Permissões: Admin, Manager
  */
@@ -244,7 +244,7 @@ router.post(
 );
 
 /**
- * PUT /smart-broker/whatsapp/instances/:name/restart
+ * PUT /whatsapp/instances/:name/restart
  * Reiniciar instância
  * Permissões: Admin, Manager
  */
@@ -273,7 +273,7 @@ router.put(
 );
 
 /**
- * GET /smart-broker/whatsapp/instances/:name/qrcode
+ * GET /whatsapp/instances/:name/qrcode
  * Obter QR Code da instância
  * Permissões: Todos os usuários autenticados (se pertence à agência)
  */
@@ -301,7 +301,7 @@ router.get(
 );
 
 /**
- * GET /smart-broker/whatsapp/instances/:name/status
+ * GET /whatsapp/instances/:name/status
  * Obter status de conexão da instância
  * Permissões: Todos os usuários autenticados (se pertence à agência)
  */

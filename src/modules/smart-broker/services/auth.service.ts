@@ -166,6 +166,28 @@ export class AuthService {
       },
     };
   }
+
+  /**
+   * Buscar usuário por ID (para endpoint /auth/profile)
+   */
+  async getUserById(userId: string): Promise<any> {
+    const user = await UserModel.findById(userId).select('-password');
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('Usuário não encontrado');
+    }
+
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+      role: user.role,
+      agencyId: user.agencyId?.toString(),
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin,
+    };
+  }
 }
 
 export const authService = new AuthService();

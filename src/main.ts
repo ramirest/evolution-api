@@ -85,10 +85,13 @@ async function bootstrap() {
 
   app.use('/store', express.static(join(ROOT_DIR, 'store')));
 
-  // ============ SMART BROKER: Montar routers ============
-  app.use('/smart-broker', smartBrokerRouter);
-  logger.info('Smart Broker Routes - ON');
+  // ============ SMART BROKER: Montar routers na RAIZ (sem prefixo) ============
+  // As rotas do Smart Broker são registradas ANTES das rotas da Evolution API
+  // para garantir que o frontend funcione sem modificações (/auth/login, /properties, etc.)
+  app.use('/', smartBrokerRouter);
+  logger.info('Smart Broker Routes - ON (mounted at root)');
 
+  // Rotas da Evolution API (mantidas como estavam)
   app.use('/', router);
 
   // ============ SMART BROKER: Error Handler (aplica ANTES do error handler da Evolution) ============

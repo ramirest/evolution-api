@@ -12,7 +12,7 @@ export type HttpServer = {
   DISABLE_MANAGER: boolean;
 };
 
-export type HttpMethods = 'POST' | 'GET' | 'PUT' | 'DELETE';
+export type HttpMethods = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
 export type Cors = {
   ORIGIN: string[];
   METHODS: HttpMethods[];
@@ -467,7 +467,7 @@ export class ConfigService {
         ORIGIN: process.env.CORS_ORIGIN?.split(',') || ['*'],
         METHODS:
           (process.env.CORS_METHODS?.split(',') as HttpMethods[]) ||
-          (['POST', 'GET', 'PUT', 'DELETE'] as HttpMethods[]),
+          (['POST', 'GET', 'PUT', 'PATCH', 'DELETE'] as HttpMethods[]),
         CREDENTIALS: process.env?.CORS_CREDENTIALS === 'true',
       },
       SSL_CONF: {

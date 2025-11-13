@@ -10,7 +10,54 @@ const logger = new Logger('PropertiesRouter');
 
 export const propertiesRouter = Router();
 
-// Todos os endpoints exigem autenticação
+/**
+ * GET /properties (PUBLIC - NO AUTH)
+ * Endpoint PÚBLICO (sem autenticação) para a Vitrine/Marketplace
+ * Retorna imóveis de TODAS as agências com dados públicos
+ * IMPORTANTE: Esta rota DEVE estar ANTES do jwtAuthMiddleware
+ */
+propertiesRouter.get(
+  '/marketplace/',
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const filters = {
+        type: req.query.type as any,
+        transactionType: req.query.transactionType as any,
+        location: req.query.location as string,
+        priceMin: req.query.priceMin ? Number(req.query.priceMin) : undefined,
+        priceMax: req.query.priceMax ? Number(req.query.priceMax) : undefined,
+        bedrooms: req.query.bedrooms ? Number(req.query.bedrooms) : undefined,
+        page: req.query.page ? Number(req.query.page) : 1,
+        limit: req.query.limit ? Number(req.query.limit) : 12,
+      };
+
+      const result = await propertiesService.findPublic(filters);
+      return res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+/**
+ * GET /properties/public/:id (PUBLIC - NO AUTH)
+ * Endpoint PÚBLICO para ver detalhes de um imóvel específico
+ * Usado pela página de detalhes do marketplace
+ * IMPORTANTE: Esta rota DEVE estar ANTES do jwtAuthMiddleware
+ */
+propertiesRouter.get(
+  '/marketplace/public/:id',
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const property = await propertiesService.findPublicById(req.params.id);
+      return res.json(property);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// Todos os endpoints ABAIXO exigem autenticação
 propertiesRouter.use(jwtAuthMiddleware);
 
 /**
@@ -133,6 +180,54 @@ propertiesRouter.post(
 
       const properties = await propertiesService.findRecommended(preferences, agencyId, limit || 5);
       return res.json(properties);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+/**
+ * POST /properties/:id/photos
+ * Adicionar foto ao imóvel (Manager/Admin)
+ */
+propertiesRouter.post(
+  '/:id/photos',
+  rbacMiddleware([UserRole.ADMIN, UserRole.MANAGER]),
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const { photoUrl } = req.body;
+
+      if (!photoUrl) {
+        return res.status(400).json({ error: 'Campo "photoUrl" é obrigatório' });
+      }
+
+      const property = await propertiesService.addPhoto(req.params.id, photoUrl, req.user!);
+      logger.info(`Foto adicionada ao imóvel ${property._id} por ${req.user!.email}`);
+      return res.json(property);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+/**
+ * DELETE /properties/:id/photos
+ * Remover foto do imóvel (Manager/Admin)
+ */
+propertiesRouter.delete(
+  '/:id/photos',
+  rbacMiddleware([UserRole.ADMIN, UserRole.MANAGER]),
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const { photoUrl } = req.body;
+
+      if (!photoUrl) {
+        return res.status(400).json({ error: 'Campo "photoUrl" é obrigatório' });
+      }
+
+      const property = await propertiesService.removePhoto(req.params.id, photoUrl, req.user!);
+      logger.info(`Foto removida do imóvel ${property._id} por ${req.user!.email}`);
+      return res.json(property);
     } catch (error) {
       next(error);
     }

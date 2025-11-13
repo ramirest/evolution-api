@@ -17,7 +17,7 @@ export enum AgentStatus {
 }
 
 export interface IMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant' | 'system' | 'tool'; // ✅ Adicionado 'tool'
   content: string;
   timestamp: Date;
   metadata?: Record<string, any>;
@@ -40,7 +40,7 @@ export interface IAgentSession extends Document {
 
 const MessageSchema = new Schema<IMessage>(
   {
-    role: { type: String, enum: ['user', 'assistant', 'system'], required: true },
+    role: { type: String, enum: ['user', 'assistant', 'system', 'tool'], required: true }, // ✅ Adicionado 'tool'
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
     metadata: { type: Object },

@@ -322,6 +322,29 @@ export class AgenciesService {
       },
     };
   }
+
+  /**
+   * Buscar dados públicos da agência (SEM RBAC - Para a Vitrine/Marketplace)
+   * Retorna apenas informações necessárias para o botão de contato
+   */
+  async findPublic(id: string): Promise<any> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID inválido');
+    }
+
+    const agency = await AgencyModel.findById(id).select('name phone email').exec();
+
+    if (!agency) {
+      throw new NotFoundException('Agência não encontrada');
+    }
+
+    return {
+      id: agency._id,
+      name: agency.name,
+      phone: agency.phone,
+      email: agency.email,
+    };
+  }
 }
 
 export const agenciesService = new AgenciesService();

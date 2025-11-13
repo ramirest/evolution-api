@@ -300,6 +300,174 @@ export class PropertiesService {
     const properties = await PropertyModel.find(query).limit(limit).sort({ createdAt: -1 }).exec();
     return properties;
   }
+
+  /**
+   * Buscar imóveis públicos (SEM RBAC - Para a Vitrine/Marketplace)
+   * Retorna imóveis de TODAS as agências com campos públicos selecionados
+   */
+  async findPublic(filters?: {
+    type?: PropertyType;
+    transactionType?: TransactionType;
+    location?: string; // Busca flexível em city ou neighborhood
+    priceMin?: number;
+    priceMax?: number;
+    bedrooms?: number;
+    page?: number;
+    limit?: number;
+  }): Promise<{ properties: any[]; total: number; page: number; totalPages: number }> {
+    const query: any = {
+      isActive: true,
+      status: PropertyStatus.AVAILABLE,
+    };
+
+    // Aplicar filtros
+    if (filters) {
+      if (filters.type) query.type = filters.type;
+      if (filters.transactionType) query.transactionType = filters.transactionType;
+
+      // Busca flexível por localização (city OU neighborhood)
+      if (filters.location) {
+        query.$or = [
+          { 'address.city': new RegExp(filters.location, 'i') },
+          { 'address.neighborhood': new RegExp(filters.location, 'i') },
+        ];
+      }
+
+      if (filters.priceMin !== undefined || filters.priceMax !== undefined) {
+        query.price = {};
+        if (filters.priceMin !== undefined) query.price.$gte = filters.priceMin;
+        if (filters.priceMax !== undefined) query.price.$lte = filters.priceMax;
+      }
+
+      if (filters.bedrooms !== undefined) {
+        query['features.bedrooms'] = { $gte: filters.bedrooms };
+      }
+    }
+
+    // Paginação
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 12;
+    const skip = (page - 1) * limit;
+
+    // Buscar apenas campos públicos
+    const properties = await PropertyModel.find(query)
+      .select(
+        'type transactionType title price area address.city address.neighborhood address.state photos features.bedrooms features.bathrooms features.parkingSpaces agency createdAt',
+      )
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('agency', 'name phone email') // Popular dados básicos da agência para contato
+      .exec();
+
+    const total = await PropertyModel.countDocuments(query);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      properties,
+      total,
+      page,
+      totalPages,
+    };
+  }
+
+  /**
+   * Buscar imóvel por ID (endpoint PÚBLICO)
+   * Retorna dados completos de um imóvel ativo para visualização pública
+   */
+  async findPublicById(id: string): Promise<IProperty> {
+    // Validar ID
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID do imóvel inválido');
+    }
+
+    // Buscar apenas imóveis ativos
+    const property = await PropertyModel.findOne({
+      _id: id,
+      isActive: true,
+      status: PropertyStatus.AVAILABLE,
+    })
+      .populate('agency', 'name phone email whatsapp address')
+      .exec();
+
+    if (!property) {
+      throw new NotFoundException('Imóvel não encontrado ou indisponível');
+    }
+
+    return property;
+  }
+
+  /**
+   * Adicionar foto ao imóvel (com RBAC)
+   */
+  async addPhoto(id: string, photoUrl: string, user: AuthenticatedUser): Promise<IProperty> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID inválido');
+    }
+
+    const property = await PropertyModel.findById(id).exec();
+
+    if (!property) {
+      throw new NotFoundException('Imóvel não encontrado');
+    }
+
+    // RBAC: Verificar permissão para modificar
+    if (user.role === UserRole.ADMIN) {
+      // Admin pode modificar qualquer imóvel
+    } else if (user.role === UserRole.MANAGER) {
+      // Manager pode modificar imóveis da própria agência
+      if (property.agency.toString() !== user.agencyId) {
+        throw new ForbiddenException('Você não tem permissão para adicionar fotos a este imóvel');
+      }
+    } else {
+      // Agent/Viewer não podem modificar
+      throw new ForbiddenException('Você não tem permissão para adicionar fotos a imóveis');
+    }
+
+    const updatedProperty = await PropertyModel.findByIdAndUpdate(
+      id,
+      { $push: { photos: photoUrl } },
+      { new: true },
+    ).exec();
+
+    return updatedProperty!;
+  }
+
+  /**
+   * Remover foto do imóvel (com RBAC)
+   */
+  async removePhoto(id: string, photoUrl: string, user: AuthenticatedUser): Promise<IProperty> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID inválido');
+    }
+
+    const property = await PropertyModel.findById(id).exec();
+
+    if (!property) {
+      throw new NotFoundException('Imóvel não encontrado');
+    }
+
+    // RBAC: Verificar permissão para modificar
+    if (user.role === UserRole.ADMIN) {
+      // Admin pode modificar qualquer imóvel
+    } else if (user.role === UserRole.MANAGER) {
+      // Manager pode modificar imóveis da própria agência
+      if (property.agency.toString() !== user.agencyId) {
+        throw new ForbiddenException('Você não tem permissão para remover fotos deste imóvel');
+      }
+    } else {
+      // Agent/Viewer não podem modificar
+      throw new ForbiddenException('Você não tem permissão para remover fotos de imóveis');
+    }
+
+    const updatedProperty = await PropertyModel.findByIdAndUpdate(
+      id,
+      { $pull: { photos: photoUrl } },
+      { new: true },
+    ).exec();
+
+    return updatedProperty!;
+  }
 }
 
 export const propertiesService = new PropertiesService();

@@ -9,7 +9,20 @@ import { Logger } from '../../../config/logger.config';
 const logger = new Logger('AgenciesRouter');
 const router = Router();
 
-// Aplicar autenticação JWT em todas as rotas
+/**
+ * GET /public/:id - Endpoint PÚBLICO para buscar dados básicos da agência
+ * Usado pela Vitrine para exibir botão de contato via WhatsApp
+ */
+router.get('/public/:id', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const agency = await agenciesService.findPublic(req.params.id);
+    res.json(agency);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Aplicar autenticação JWT em todas as rotas ABAIXO
 router.use(jwtAuthMiddleware);
 
 /**

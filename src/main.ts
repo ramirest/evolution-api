@@ -157,7 +157,9 @@ async function bootstrap() {
     Sentry.setupExpressErrorHandler(app);
   }
 
-  server.listen(httpServer.PORT, () => logger.log(httpServer.TYPE.toUpperCase() + ' - ON: ' + httpServer.PORT));
+  server.listen(Number(process.env.PORT || httpServer.PORT), '0.0.0.0', () =>
+    logger.log(httpServer.TYPE.toUpperCase() + ' - ON: ' + (process.env.PORT || httpServer.PORT)),
+  );
 
   initWA().catch((error) => {
     logger.error('Error loading instances: ' + error);

@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: evolution-api
+    env: node
+    plan: starter
+    buildCommand: npm install && npm run db:generate && npm run build    startCommand: npm run start:prod
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: AUTHENTICATION_API_KEY
+        sync: false
+      - key: DATABASE_CONNECTION_CLIENT_NAME
+        value: evolution_api
+      - key: DATABASE_PROVIDER
+        value: postgresql
+      - key: DATABASE_CONNECTION_URI
+        sync: false
+      - key: REDIS_URI
+        sync: false

@@ -3,7 +3,8 @@ services:
     name: evolution-api
     env: node
     plan: starter
-    buildCommand: npm install && npm run db:generate && npm run build    startCommand: npm run start:prod
+    buildCommand: npm install && npm run db:generate && npm run build    
+    startCommand: npm run start:prod
     envVars:
       - key: PORT
         value: 8080

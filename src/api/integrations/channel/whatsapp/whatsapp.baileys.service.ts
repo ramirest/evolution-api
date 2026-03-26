@@ -571,10 +571,23 @@ export class BaileysStartupService extends ChannelStartupService {
     if (db.SAVE_DATA.INSTANCE) {
       return await useMultiFileAuthStatePrisma(this.instance.id, this.cache);
     }
+
+    this.logger.warn(
+      'No auth state provider configured. Falling back to Prisma auth state. ' +
+        'Set DATABASE_SAVE_DATA_INSTANCE=true or CACHE_REDIS_SAVE_INSTANCES=true to avoid this warning.',
+    );
+
+    return await useMultiFileAuthStatePrisma(this.instance.id, this.cache);
   }
 
   private async createClient(number?: string): Promise<WASocket> {
     this.instance.authState = await this.defineAuthState();
+
+    if (!this.instance.authState?.state?.creds || !this.instance.authState?.state?.keys) {
+      throw new InternalServerErrorException(
+        'Auth state was not initialized. Check DATABASE_SAVE_DATA_INSTANCE, CACHE_REDIS_SAVE_INSTANCES, or provider configuration.',
+      );
+    }
 
     const session = this.configService.get<ConfigSessionPhone>('CONFIG_SESSION_PHONE');
 
